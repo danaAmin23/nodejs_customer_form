@@ -1,0 +1,197 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: #BFC9DC;
+        }
+
+        #MainPanel {
+            width: 25pc;
+            padding: 12px;
+        }
+
+
+
+
+        .Panels {
+            position: absolute;
+            border: solid 1px #002594;
+            background-color: ButtonFace;
+        }
+
+        .labels {
+            position: absolute;
+            font-family: Arial, Helvetica;
+            font-size: 11pt;
+            color: #002594;
+            text-align: left;
+        }
+
+        .TextBoxes {
+            position: absolute;
+            border: solid 1px #002594;
+            height: 20px;
+            font-family: Arial, Helvetica;
+            font-size: 11pt;
+            color: #002594;
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        .buttons {
+            position: absolute;
+            height: 20px;
+            font-family: Arial, Helvetica;
+            font-size: 11pt;
+            color: #002594;
+        }
+    </style>
+
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        // use jQuery to define event handlers for page loading
+        // and the button
+
+
+        //clear all inputs for a new customer() entry
+        $('#btnNewCustomer').click(function newCustomer() {
+
+            //loop through all inputs and clear
+            for (i = 0; i < $('input').length; i++) {
+                $('input')[i].value = "";
+
+
+            }//end for
+            console.log("all clear");
+        });//end event newCustomer
+
+
+
+        $(document).ready(function () {
+            $("#add").click(function () {
+                $.post("/add", {
+                    // this is the data being posted to the web server
+                    FirstName: document.getElementById("txtFirstName").value,
+                    LastName: document.getElementById("txtLastName").value,
+                    Address: document.getElementById("txtAddress").value,
+                    City: document.getElementById("txtCity").value,
+                    Province: document.getElementById("txtProvince").value,
+                    PostalCode: document.getElementById("txtPostal").value
+
+
+
+                },
+                    // callback function returns status and data as object literal
+                    function (data, status) {
+                        document.getElementById("txtFirst").value = data.cusID;
+
+                    });
+            });
+
+            $("#delete").click(function () {
+                $.post("/delete", {
+                    // this is the data being posted to the web server
+                    CusID: document.getElementById("txtCusID").value
+                },
+                    // callback function returns status and data as object literal
+                    function (data, status) {
+                        //document.getElementById("txtFirst").value = "D";
+
+                    });
+            });
+
+
+            $("#update").click(function () {
+                $.post("/update", {
+                    // this is the data being posted to the web server
+                    CusID: document.getElementById("txtCusID").value,
+                    FirstName: document.getElementById("txtFirstName").value,
+                    LastName: document.getElementById("txtLastName").value,
+                    Address: document.getElementById("txtAddress").value,
+                    City: document.getElementById("txtCity").value,
+                    Province: document.getElementById("txtProvince").value,
+                    PostalCode: document.getElementById("txtPostal").value
+                },
+                    // callback function returns status and data as object literal
+                    function (data, status) {
+                        //document.getElementById("txtFirst").value = "D";
+
+                    });
+            });
+
+
+
+            $("#find").click(function (event) {
+                $.post("/find", {
+                    // this is the data being posted to the web server
+                    CusID: document.getElementById("txtCusID").value
+                },
+                    // callback function returns status and data as object literal
+                    function (data, status) {
+                        console.log(status);
+                        console.log(data);
+                        console.log(data.errMessage);
+                        if (!data.errMessage) {
+                            document.getElementById("txtFirstName").value = data.first;
+                            document.getElementById("txtLastName").value = data.last;
+                            document.getElementById("txtAddress").value = data.address;
+                            document.getElementById("txtCity").value = data.city;
+                            document.getElementById("txtProvince").value = data.province;
+                            document.getElementById("txtPostal").value = data.postal;
+                        }
+
+                        else {
+                            //issue err message if customer record not found
+                            document.getElementById("errMsg").innerHTML = data.errMessage;
+
+                        }
+                        //   alert(data.first);
+                    });
+                event.preventDefault()
+
+            })
+
+        });//end on load
+    </script>
+
+
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+        <div ID="MainPanel" class="Panels" style="left:10px; top: 10px; height:350px; right:10px">
+
+            <form>
+                Customer #: <input type="text" name="txtCusID" id="txtCusID" style="width:75px;"><br><br>
+                First Name: <input type="text" name="txtFirstName" id="txtFirstName"><br><br>
+                Last Name: <input type="text" name="txtLastName" id="txtLastName"><br><br>
+                Address: <input type="text" name="txtAddress" id="txtAddress"
+                    style="width:154px;margin-left:17px"><br><br>
+                City: <input type="text" name="txtCity" id="txtCity" style="width:75px;margin-left:43px;"><br><br>
+                Province: <input type="text" name="txtProvince" id="txtProvince" style="margin-left:14px;"><br><br>
+                Postal: <input type="text" name="txtPostal" id="txtPostal" style="margin-left:31px;">
+
+                <br />
+
+                <button id="new" onclick="newCustomer" class="buttons"
+                    style="left:10px; bottom:10px">new</button><br><br>
+
+                <button id="add" class="buttons" style="left:70px; bottom:10px">add</button><br><br>
+                <button id="update" class="buttons" style="left:130px; bottom:10px">update</button><br><br>
+                <button id="delete" class="buttons" style="left:210px; bottom:10px">delete</button><br><br>
+                <button id="find" class="buttons" style="left:290px; bottom:10px">find</button><br><br>
+
+                <div id="errMsg"></div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
